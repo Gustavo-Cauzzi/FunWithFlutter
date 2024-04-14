@@ -1,3 +1,1 @@
-# tde1
-
-A new Flutter project.
+Just some CRUDs with flutter
