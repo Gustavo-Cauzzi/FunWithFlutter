@@ -41,6 +41,13 @@ class BancoHelper {
 
   Future<int> insert(Map<String, dynamic> row) async {
     await initDB();
+    if (row.containsKey(idColumn)) {
+      List matchingList =
+          await _db.query(table, where: "$idColumn == ${row[idColumn]}");
+      if (matchingList.isNotEmpty) {
+        return _db.update(table, row, where: "$idColumn == ${row[idColumn]}");
+      }
+    }
     return await _db.insert(table, row);
   }
 

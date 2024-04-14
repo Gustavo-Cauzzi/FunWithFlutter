@@ -25,6 +25,7 @@ class _PersonFormState extends State<PersonForm> {
       var bdHelper = BancoHelper();
 
       Map<String, dynamic> row = {
+        BancoHelper.idColumn: person?.id,
         BancoHelper.nameColumn: _controllerNome.text,
         BancoHelper.ageColumn: _controllerIdade.text
       };

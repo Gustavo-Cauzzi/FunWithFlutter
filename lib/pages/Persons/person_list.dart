@@ -220,13 +220,16 @@ class _PersonsListState extends State<PersonsList> {
                                                     icon: const Icon(Icons.edit,
                                                         size: 14),
                                                     color: Colors.white,
-                                                    onPressed: () => Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                PersonForm(
-                                                                    person:
-                                                                        person))),
+                                                    onPressed: () async {
+                                                      await Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  PersonForm(
+                                                                      person:
+                                                                          person)));
+                                                      loadPersons();
+                                                    },
                                                   ),
                                                 ),
                                                 const SizedBox(
