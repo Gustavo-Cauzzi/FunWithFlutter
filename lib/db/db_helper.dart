@@ -1,16 +1,19 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:tde1/model/food.dart';
 import 'package:tde1/model/person.dart';
 
 class BancoHelper {
   static const arquivoDoBancoDeDados = 'nossoBD.db';
-  static const arquivoDoBancoDeDadosVersao = 1;
+  static const arquivoDoBancoDeDadosVersao = 2;
 
   static const table = 'persons';
+  static const tableFood = 'foods';
   static const idColumn = 'id';
   static const nameColumn = 'name';
   static const ageColumn = 'age';
+  static const weightColumn = 'weight';
 
   static late Database _db;
 
@@ -35,7 +38,15 @@ class BancoHelper {
       ''');
   }
 
-  Future upgradeDB(Database db, int oldVersion, int newVersion) async {}
+  Future upgradeDB(Database db, int oldVersion, int newVersion) async {
+    await db.execute('''
+        CREATE TABLE $tableFood (
+          $idColumn INTEGER PRIMARY KEY,
+          $nameColumn TEXT NOT NULL,
+          $weightColumn NUMERIC (19, 4) NOT NULL
+        )
+      ''');
+  }
 
   Future downgradeDB(Database db, int oldVersion, int newVersion) async {}
 
@@ -84,6 +95,57 @@ class BancoHelper {
       regPerson.toMap(),
       where: '$idColumn = ?',
       whereArgs: [regPerson.id],
+    );
+  }
+
+  // Comidas
+
+  Future<int> insertFood(Map<String, dynamic> row) async {
+    await initDB();
+    if (row.containsKey(idColumn)) {
+      List matchingList =
+          await _db.query(tableFood, where: "$idColumn == ${row[idColumn]}");
+      if (matchingList.isNotEmpty) {
+        return _db.update(tableFood, row,
+            where: "$idColumn == ${row[idColumn]}");
+      }
+    }
+    return await _db.insert(tableFood, row);
+  }
+
+  Future<int> deleteAllFoods() async {
+    await initDB();
+    return _db.delete(tableFood);
+  }
+
+  Future<int> deleteFood(int id) async {
+    await initDB();
+    return _db.delete(tableFood, where: '$idColumn = ?', whereArgs: [id]);
+  }
+
+  Future<List<Food>> findAllFoods() async {
+    await initDB();
+
+    final List<Map<String, Object?>> allFoods = await _db.query(tableFood);
+
+    return [
+      for (final {
+            idColumn: pId as int,
+            nameColumn: pName as String,
+            weightColumn: pWeight as int,
+          } in allFoods)
+        Food(id: pId, name: pName, weight: pWeight),
+    ];
+  }
+
+  Future<void> editFood(Food regFood) async {
+    await initDB();
+
+    await _db.update(
+      tableFood,
+      regFood.toMap(),
+      where: '$idColumn = ?',
+      whereArgs: [regFood.id],
     );
   }
 }

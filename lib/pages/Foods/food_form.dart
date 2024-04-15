@@ -1,34 +1,36 @@
-import 'package:flutter/material.dart';
 import 'package:tde1/db/db_helper.dart';
-import 'package:tde1/model/person.dart';
 
-class PersonForm extends StatefulWidget {
-  Person? person;
-  PersonForm({Key? key, this.person}) : super(key: key);
+import 'package:tde1/model/food.dart';
+import 'package:tde1/model/food.dart';
+import 'package:flutter/material.dart';
+
+class FoodForm extends StatefulWidget {
+  Food? food;
+  FoodForm({Key? key, this.food}) : super(key: key);
 
   @override
-  _PersonFormState createState() => _PersonFormState(person: this.person);
+  _FoodFormState createState() => _FoodFormState(food: this.food);
 }
 
-class _PersonFormState extends State<PersonForm> {
-  Person? person;
-  _PersonFormState({this.person});
+class _FoodFormState extends State<FoodForm> {
+  Food? food;
+  _FoodFormState({this.food});
 
   final TextEditingController _controllerNome = TextEditingController();
-  final TextEditingController _controllerIdade = TextEditingController();
+  final TextEditingController _controllerPeso = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void saveShit() async {
+  void saveFood() async {
     if (_formKey.currentState!.validate()) {
       var bdHelper = BancoHelper();
 
       Map<String, dynamic> row = {
-        BancoHelper.idColumn: person?.id,
+        BancoHelper.idColumn: food?.id,
         BancoHelper.nameColumn: _controllerNome.text,
-        BancoHelper.ageColumn: _controllerIdade.text
+        BancoHelper.weightColumn: _controllerPeso.text
       };
 
-      await bdHelper.insert(row);
+      await bdHelper.insertFood(row);
 
       Navigator.pop(context);
     }
@@ -37,22 +39,22 @@ class _PersonFormState extends State<PersonForm> {
   @override
   void dispose() {
     _controllerNome.dispose();
-    _controllerIdade.dispose();
+    _controllerPeso.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
-    if (person == null) return;
-    _controllerIdade.text = person?.age.toString() ?? "";
-    _controllerNome.text = person?.name.toString() ?? "";
+    if (food == null) return;
+    _controllerPeso.text = food?.weight.toString() ?? "";
+    _controllerNome.text = food?.name.toString() ?? "";
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastro de Persons'),
+        title: const Text('Cadastro de Comidas'),
       ),
       body: Form(
           key: _formKey,
@@ -81,21 +83,24 @@ class _PersonFormState extends State<PersonForm> {
                   height: 15.7,
                 ),
                 TextFormField(
-                  controller: _controllerIdade,
+                  controller: _controllerPeso,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'É obrigatório informar a idade.';
+                      return 'É obrigatório informar o peso.';
                     }
-                    if (value.contains('.') || value.contains(",")) {
-                      return "Número necessita ser inteiro";
-                    }
-                    if (value.contains('-') ||
-                        value.trim().contains(" ") ||
-                        RegExp(r'\D').hasMatch(value)) {
-                      return "Número inválido";
-                    }
-                    if (value.length > 19) {
+                    if (value.contains(",")) {
+                      if (value.split(",").length > 19) {
+                        return "Número não pode ser maior que 19 dígitos";
+                      }
+                      if (value.split(',')[1].length > 4) {
+                        return "Decimais não podem ser maiores que 4 dígitos";
+                      }
+                      value.replaceAll(",", ".");
+                    } else if (value.length > 19) {
                       return "Número não pode ser maior que 19 dígitos";
+                    }
+                    if (value.contains('-') || value.trim().contains(" ")) {
+                      return "Número inválido";
                     }
                     return null;
                   },
@@ -105,7 +110,7 @@ class _PersonFormState extends State<PersonForm> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
-                    hintText: "Idade",
+                    hintText: "Peso",
                   ),
                 )
               ],
@@ -116,7 +121,7 @@ class _PersonFormState extends State<PersonForm> {
           return FloatingActionButton(
             child: const Icon(Icons.save),
             onPressed: () {
-              saveShit();
+              saveFood();
             },
           );
         },

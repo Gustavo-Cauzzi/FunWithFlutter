@@ -1,39 +1,41 @@
-import 'package:flutter/material.dart';
 import 'package:tde1/db/db_helper.dart';
-import 'package:tde1/model/person.dart';
-import 'package:tde1/pages/Persons/person_form.dart';
+import 'package:tde1/model/food.dart';
+import 'package:flutter/material.dart';
+import 'package:tde1/pages/Foods/food_form.dart';
+
+import 'package:tde1/pages/Foods/food_form.dart';
 import 'package:tde1/utils/ui_utils.dart';
 
 void main() {
-  runApp(const PersonsList());
+  runApp(const FoodsList());
 }
 
-class PersonsList extends StatefulWidget {
-  const PersonsList({super.key});
+class FoodsList extends StatefulWidget {
+  const FoodsList({super.key});
 
   @override
-  State<PersonsList> createState() => _PersonsListState();
+  State<FoodsList> createState() => _FoodsListState();
 }
 
-class _PersonsListState extends State<PersonsList> {
+class _FoodsListState extends State<FoodsList> {
   var bdHelper = BancoHelper();
   final _searchDebouncer = Debouncer(milliseconds: 300);
   final _nameFilterController = TextEditingController();
-  final _ageFilterController = TextEditingController();
+  final _weightFilterController = TextEditingController();
 
   bool _isFiltersActive = false;
-  final List<Person> _data = [];
+  final List<Food> _data = [];
 
-  List<Person> getFilteredList() {
+  List<Food> getFilteredList() {
     return _data
-        .where((person) =>
+        .where((food) =>
             (_nameFilterController.text.isEmpty ||
-                person.name == null ||
-                person.name!
+                food.name == null ||
+                food.name!
                     .toLowerCase()
                     .contains(_nameFilterController.text.toLowerCase())) &&
-            (_ageFilterController.text.isEmpty ||
-                person.age.toString().contains(_ageFilterController.text)))
+            (_weightFilterController.text.isEmpty ||
+                food.weight.toString().contains(_weightFilterController.text)))
         .toList();
   }
 
@@ -43,8 +45,8 @@ class _PersonsListState extends State<PersonsList> {
     });
   }
 
-  void loadPersons() async {
-    var r = await bdHelper.findAll();
+  void loadFoods() async {
+    var r = await bdHelper.findAllFoods();
 
     setState(() {
       _data.clear();
@@ -58,24 +60,24 @@ class _PersonsListState extends State<PersonsList> {
 
     if (!confirmation) return;
 
-    await bdHelper.deleteAll();
-    loadPersons();
+    await bdHelper.deleteAllFoods();
+    loadFoods();
   }
 
-  void delete(Person person) async {
-    bool confirmation = await confirmationDialog(context, "Excluir pessoa",
-        "Você tem certeza que deseja excluir a pessoa \"${person.name}\"?");
+  void delete(Food food) async {
+    bool confirmation = await confirmationDialog(context, "Excluir comida",
+        "Você tem certeza que deseja excluir essa comida \"${food.name}\"?");
 
     if (!confirmation) return;
-    if (person.id == null) return;
-    await bdHelper.delete(person.id!);
-    loadPersons();
+    if (food.id == null) return;
+    await bdHelper.deleteFood(food.id!);
+    loadFoods();
   }
 
   @override
   void initState() {
     super.initState();
-    loadPersons();
+    loadFoods();
   }
 
   @override
@@ -89,7 +91,7 @@ class _PersonsListState extends State<PersonsList> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Pessoas'),
+          title: const Text('Comidas'),
           leading: BackButton(
             onPressed: () {
               Navigator.pop(context);
@@ -136,25 +138,6 @@ class _PersonsListState extends State<PersonsList> {
                                           _nameFilterController.text = text;
                                         }))),
                           ),
-                          Container(
-                            height: 35,
-                            margin: const EdgeInsets.only(bottom: 15),
-                            child: TextField(
-                              controller: _ageFilterController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.all(8.0),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                hintText: "Idade",
-                              ),
-                              onChanged: (text) =>
-                                  _searchDebouncer.run(() => setState(() {
-                                        _ageFilterController.text = text;
-                                      })),
-                            ),
-                          ),
                         ],
                       )
                     : const SizedBox(),
@@ -191,7 +174,7 @@ class _PersonsListState extends State<PersonsList> {
                               scrollDirection: Axis.vertical,
                               child: DataTable(
                                 columnSpacing: 30,
-                                columns: ['ID', 'Nome', 'Idade', '']
+                                columns: ['ID', 'Nome', 'Peso', '']
                                     .map((label) => DataColumn(
                                           label: Text(
                                             label,
@@ -201,14 +184,15 @@ class _PersonsListState extends State<PersonsList> {
                                         ))
                                     .toList(),
                                 rows: getFilteredList()
-                                    .map((person) => DataRow(
+                                    .map((food) => DataRow(
                                           cells: <DataCell>[
                                             DataCell(Text(
-                                                person.id?.toString() ?? '-')),
+                                                food.id?.toString() ?? '-')),
                                             DataCell(Text(
-                                                person.name ?? 'Desconhecido')),
+                                                food.name ?? 'Desconhecido')),
                                             DataCell(Text(
-                                                person.age?.toString() ?? "-")),
+                                                food.weight?.toString() ??
+                                                    "-")),
                                             DataCell(
                                               Row(children: [
                                                 Ink(
@@ -229,10 +213,10 @@ class _PersonsListState extends State<PersonsList> {
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  PersonForm(
-                                                                      person:
-                                                                          person)));
-                                                      loadPersons();
+                                                                  FoodForm(
+                                                                      food:
+                                                                          food)));
+                                                      loadFoods();
                                                     },
                                                   ),
                                                 ),
@@ -254,7 +238,7 @@ class _PersonsListState extends State<PersonsList> {
                                                         size: 14),
                                                     color: Colors.white,
                                                     onPressed: () =>
-                                                        delete(person),
+                                                        delete(food),
                                                   ),
                                                 )
                                               ]),
@@ -268,7 +252,7 @@ class _PersonsListState extends State<PersonsList> {
                         ),
                         Center(
                           child: _data.isEmpty
-                              ? const Text("Nenhuma pessoa cadastrada")
+                              ? const Text("Nenhuma comida cadastrada")
                               : const SizedBox(),
                         ),
                       ],
@@ -311,14 +295,14 @@ class _PersonsListState extends State<PersonsList> {
         floatingActionButton: Builder(
           builder: (BuildContext context) {
             return FloatingActionButton(
-              child: const Icon(Icons.person_add),
+              child: const Icon(Icons.fastfood_rounded),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PersonForm(),
+                    builder: (context) => FoodForm(),
                   ),
-                ).then((value) => loadPersons());
+                ).then((value) => loadFoods());
               },
             );
           },

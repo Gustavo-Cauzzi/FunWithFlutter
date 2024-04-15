@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tde1/pages/Foods/food_list.dart';
 import 'package:tde1/pages/Persons/person_list.dart';
 
 class Menu extends StatelessWidget {
@@ -7,7 +8,7 @@ class Menu extends StatelessWidget {
   // TODO: Se alguém tiver com tempo e tiver ideia de como que a gente podia fazer pra só ter uma lista assim e renderizar usando um map, se divirta. Eu não consegui
   final _buttons = [
     {'label': 'Pessoas', 'goTo': PersonsList},
-    {'label': 'Pessoas', 'goTo': PersonsList},
+    {'label': 'Comidas', 'goTo': FoodsList},
     {'label': 'Pessoas', 'goTo': PersonsList},
   ];
 
@@ -31,9 +32,10 @@ class Menu extends StatelessWidget {
                   style: TextStyle(fontSize: 20),
                 )),
             ElevatedButton(
-                onPressed: () {},
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const FoodsList())),
                 child: const Text(
-                  'Pessoas',
+                  'Comidas',
                   style: TextStyle(fontSize: 20),
                 )),
             ElevatedButton(
