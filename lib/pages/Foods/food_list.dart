@@ -190,9 +190,10 @@ class _FoodsListState extends State<FoodsList> {
                                                 food.id?.toString() ?? '-')),
                                             DataCell(Text(
                                                 food.name ?? 'Desconhecido')),
-                                            DataCell(Text(
-                                                food.weight?.toString() ??
-                                                    "-")),
+                                            DataCell(Text(food.weight
+                                                    ?.toString()
+                                                    .replaceAll(".", ",") ??
+                                                "-")),
                                             DataCell(
                                               Row(children: [
                                                 Ink(

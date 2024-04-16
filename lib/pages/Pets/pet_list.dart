@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tde1/db/db_helper.dart';
 import 'package:tde1/model/pet.dart';
-import 'package:tde1/pages/pets/pet_form.dart';
+import 'package:tde1/pages/Pets/pet_form.dart';
 import 'package:tde1/utils/ui_utils.dart';
 
 void main() {
@@ -58,7 +58,7 @@ class _PetsListState extends State<PetsList> {
 
     if (!confirmation) return;
 
-    await bdHelper.deleteAll();
+    await bdHelper.deleteAllPersons();
     loadPets();
   }
 
@@ -68,7 +68,7 @@ class _PetsListState extends State<PetsList> {
 
     if (!confirmation) return;
     if (pet.id == null) return;
-    await bdHelper.delete(pet.id!);
+    await bdHelper.deletePerson(pet.id!);
     loadPets();
   }
 
@@ -89,7 +89,7 @@ class _PetsListState extends State<PetsList> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Pessoas'),
+          title: const Text('Pets'),
           leading: BackButton(
             onPressed: () {
               Navigator.pop(context);
@@ -147,7 +147,7 @@ class _PetsListState extends State<PetsList> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(5.0),
                                 ),
-                                hintText: "Idade",
+                                hintText: "Tipo",
                               ),
                               onChanged: (text) =>
                                   _searchDebouncer.run(() => setState(() {
@@ -191,7 +191,7 @@ class _PetsListState extends State<PetsList> {
                               scrollDirection: Axis.vertical,
                               child: DataTable(
                                 columnSpacing: 30,
-                                columns: ['ID', 'Nome', 'Idade', '']
+                                columns: ['ID', 'Nome', 'Tipo', '']
                                     .map((label) => DataColumn(
                                           label: Text(
                                             label,
@@ -267,7 +267,7 @@ class _PetsListState extends State<PetsList> {
                         ),
                         Center(
                           child: _data.isEmpty
-                              ? const Text("Nenhuma pessoa cadastrada")
+                              ? const Text("Nenhum pet cadastrado")
                               : const SizedBox(),
                         ),
                       ],

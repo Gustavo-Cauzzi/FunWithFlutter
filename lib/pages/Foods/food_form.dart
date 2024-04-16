@@ -1,7 +1,6 @@
 import 'package:tde1/db/db_helper.dart';
 
 import 'package:tde1/model/food.dart';
-import 'package:tde1/model/food.dart';
 import 'package:flutter/material.dart';
 
 class FoodForm extends StatefulWidget {
@@ -27,7 +26,8 @@ class _FoodFormState extends State<FoodForm> {
       Map<String, dynamic> row = {
         BancoHelper.idColumn: food?.id,
         BancoHelper.nameColumn: _controllerNome.text,
-        BancoHelper.weightColumn: _controllerPeso.text
+        BancoHelper.weightColumn:
+            double.parse(_controllerPeso.text.replaceAll(",", "."))
       };
 
       await bdHelper.insertFood(row);
@@ -95,7 +95,6 @@ class _FoodFormState extends State<FoodForm> {
                       if (value.split(',')[1].length > 4) {
                         return "Decimais não podem ser maiores que 4 dígitos";
                       }
-                      value.replaceAll(",", ".");
                     } else if (value.length > 19) {
                       return "Número não pode ser maior que 19 dígitos";
                     }

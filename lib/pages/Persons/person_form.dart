@@ -18,7 +18,7 @@ class _PersonFormState extends State<PersonForm> {
   final TextEditingController _controllerIdade = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void saveShit() async {
+  void save() async {
     if (_formKey.currentState!.validate()) {
       var bdHelper = BancoHelper();
 
@@ -28,7 +28,7 @@ class _PersonFormState extends State<PersonForm> {
         BancoHelper.ageColumn: _controllerIdade.text
       };
 
-      await bdHelper.insert(row);
+      await bdHelper.insertPerson(row);
 
       Navigator.pop(context);
     }
@@ -116,7 +116,7 @@ class _PersonFormState extends State<PersonForm> {
           return FloatingActionButton(
             child: const Icon(Icons.save),
             onPressed: () {
-              saveShit();
+              save();
             },
           );
         },

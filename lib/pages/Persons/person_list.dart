@@ -44,7 +44,7 @@ class _PersonsListState extends State<PersonsList> {
   }
 
   void loadPersons() async {
-    var r = await bdHelper.findAll();
+    var r = await bdHelper.findAllPerson();
 
     setState(() {
       _data.clear();
@@ -58,7 +58,7 @@ class _PersonsListState extends State<PersonsList> {
 
     if (!confirmation) return;
 
-    await bdHelper.deleteAll();
+    await bdHelper.deleteAllPersons();
     loadPersons();
   }
 
@@ -68,7 +68,7 @@ class _PersonsListState extends State<PersonsList> {
 
     if (!confirmation) return;
     if (person.id == null) return;
-    await bdHelper.delete(person.id!);
+    await bdHelper.deletePerson(person.id!);
     loadPersons();
   }
 

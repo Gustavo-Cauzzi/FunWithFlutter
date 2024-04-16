@@ -1,7 +1,7 @@
 class Food {
   int? id;
   String? name;
-  int? weight;
+  double? weight;
 
   Food({
     this.id,

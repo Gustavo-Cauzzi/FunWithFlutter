@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tde1/db/db_helper.dart';
-import 'package:tde1/model/Pet.dart';
+import 'package:tde1/model/pet.dart';
 
 class PetForm extends StatefulWidget {
   Pet? pet;
@@ -18,17 +18,17 @@ class _PetFormState extends State<PetForm> {
   final TextEditingController _controllerTipo = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  void saveShit() async {
+  void save() async {
     if (_formKey.currentState!.validate()) {
       var bdHelper = BancoHelper();
 
       Map<String, dynamic> row = {
         BancoHelper.idColumn: pet?.id,
         BancoHelper.nameColumn: _controllerNome.text,
-        BancoHelper.ageColumn: _controllerTipo.text
+        BancoHelper.typeColumn: _controllerTipo.text,
       };
 
-      await bdHelper.insert(row);
+      await bdHelper.insertPet(row);
 
       Navigator.pop(context);
     }
@@ -104,7 +104,7 @@ class _PetFormState extends State<PetForm> {
           return FloatingActionButton(
             child: const Icon(Icons.save),
             onPressed: () {
-              saveShit();
+              save();
             },
           );
         },
