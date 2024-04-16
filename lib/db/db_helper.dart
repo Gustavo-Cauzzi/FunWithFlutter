@@ -3,6 +3,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tde1/model/food.dart';
 import 'package:tde1/model/person.dart';
+import 'package:tde1/model/pet.dart';
 
 class BancoHelper {
   static const arquivoDoBancoDeDados = 'nossoBD.db';
@@ -10,10 +11,12 @@ class BancoHelper {
 
   static const table = 'persons';
   static const tableFood = 'foods';
+  static const tablePet = 'pets';
   static const idColumn = 'id';
   static const nameColumn = 'name';
   static const ageColumn = 'age';
   static const weightColumn = 'weight';
+  static const typeColumn = 'type';
 
   static late Database _db;
 
@@ -44,6 +47,14 @@ class BancoHelper {
           $idColumn INTEGER PRIMARY KEY,
           $nameColumn TEXT NOT NULL,
           $weightColumn NUMERIC (19, 4) NOT NULL
+        )
+      ''');
+
+    await db.execute('''
+        CREATE TABLE $tablePet (
+          $idColumn INTEGER PRIMARY KEY,
+          $nameColumn TEXT NOT NULL,
+          $typeColumn TEXT NOT NULL
         )
       ''');
   }
@@ -146,6 +157,57 @@ class BancoHelper {
       regFood.toMap(),
       where: '$idColumn = ?',
       whereArgs: [regFood.id],
+    );
+  }
+
+  // Pets
+
+  Future<int> insertPet(Map<String, dynamic> row) async {
+    await initDB();
+    if (row.containsKey(idColumn)) {
+      List matchingList =
+          await _db.query(tablePet, where: "$idColumn == ${row[idColumn]}");
+      if (matchingList.isNotEmpty) {
+        return _db.update(tablePet, row,
+            where: "$idColumn == ${row[idColumn]}");
+      }
+    }
+    return await _db.insert(tablePet, row);
+  }
+
+  Future<int> deleteAllPets() async {
+    await initDB();
+    return _db.delete(tablePet);
+  }
+
+  Future<int> deletePet(int id) async {
+    await initDB();
+    return _db.delete(tablePet, where: '$idColumn = ?', whereArgs: [id]);
+  }
+
+  Future<List<Pet>> findAllPets() async {
+    await initDB();
+
+    final List<Map<String, Object?>> allPets = await _db.query(tablePet);
+
+    return [
+      for (final {
+            idColumn: pId as int,
+            nameColumn: pName as String,
+            typeColumn: pType as String,
+          } in allPets)
+        Pet(id: pId, name: pName, type: pType),
+    ];
+  }
+
+  Future<void> editPet(Pet regPet) async {
+    await initDB();
+
+    await _db.update(
+      tablePet,
+      regPet.toMap(),
+      where: '$idColumn = ?',
+      whereArgs: [regPet.id],
     );
   }
 }
