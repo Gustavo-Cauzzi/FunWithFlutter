@@ -253,7 +253,11 @@ class _FoodsListState extends State<FoodsList> {
                         ),
                         Center(
                           child: _data.isEmpty
-                              ? const Text("Nenhuma comida cadastrada")
+                              ? Container(
+                                  margin: const EdgeInsets.only(bottom: 15),
+                                  child:
+                                      const Text("Nenhuma comida cadastrada"),
+                                )
                               : const SizedBox(),
                         ),
                       ],

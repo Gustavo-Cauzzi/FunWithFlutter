@@ -268,7 +268,11 @@ class _PersonsListState extends State<PersonsList> {
                         ),
                         Center(
                           child: _data.isEmpty
-                              ? const Text("Nenhuma pessoa cadastrada")
+                              ? Container(
+                                  margin: const EdgeInsets.only(bottom: 15),
+                                  child:
+                                      const Text("Nenhuma pessoa cadastrada"),
+                                )
                               : const SizedBox(),
                         ),
                       ],

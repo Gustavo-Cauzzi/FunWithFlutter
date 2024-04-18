@@ -58,7 +58,7 @@ class _PetsListState extends State<PetsList> {
 
     if (!confirmation) return;
 
-    await bdHelper.deleteAllPersons();
+    await bdHelper.deleteAllPets();
     loadPets();
   }
 
@@ -68,7 +68,7 @@ class _PetsListState extends State<PetsList> {
 
     if (!confirmation) return;
     if (pet.id == null) return;
-    await bdHelper.deletePerson(pet.id!);
+    await bdHelper.deletePet(pet.id!);
     loadPets();
   }
 
@@ -267,7 +267,10 @@ class _PetsListState extends State<PetsList> {
                         ),
                         Center(
                           child: _data.isEmpty
-                              ? const Text("Nenhum pet cadastrado")
+                              ? Container(
+                                  margin: const EdgeInsets.only(bottom: 15),
+                                  child: const Text("Nenhum pet cadastrado"),
+                                )
                               : const SizedBox(),
                         ),
                       ],
